@@ -8,7 +8,7 @@ import ru.andrey.remote.service.DeviceService
 import javax.validation.Valid
 
 @RestController
-@RequestMapping("device")
+@RequestMapping("devices")
 class DeviceController(
         private val deviceService: DeviceService
 ) {

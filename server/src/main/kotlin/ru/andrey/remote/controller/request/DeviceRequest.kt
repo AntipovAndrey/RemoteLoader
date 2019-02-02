@@ -8,4 +8,5 @@ data class DeviceRequest(
         val deviceId: String?,
 
         @field:NotEmpty
-        val name: String?)
+        val name: String?
+)

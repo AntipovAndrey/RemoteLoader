@@ -4,6 +4,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import ru.andrey.remote.controller.request.DeviceRequest
 import ru.andrey.remote.repository.DeviceRepository
+import ru.andrey.remote.service.exception.NoSuchDeviceException
 import ru.andrey.remote.service.mapping.toDto
 import ru.andrey.remote.service.mapping.toModel
 
@@ -31,4 +32,11 @@ class DeviceService(
     }
 
     fun getAll() = deviceRepository.findAll().map { it.toDto() }
+
+    fun assertDevicePresent(deviceId: String) {
+        if (!deviceRepository.existsByDeviceId(deviceId)) {
+            log.info("unknown device {} ", deviceId)
+            throw NoSuchDeviceException(deviceId)
+        }
+    }
 }

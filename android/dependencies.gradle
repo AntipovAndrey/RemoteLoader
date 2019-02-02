@@ -1,0 +1,33 @@
+ext {
+    // Android
+    minSdkVersion = 21
+    targetSdkVersion = 28
+    compileSdkVersion = 28
+
+    // Libs
+    androidSupportLibVersion = "28.0.0"
+
+    roomVersion = "1.1.1"
+    room = "android.arch.persistence.room:runtime:$roomVersion"
+    roomRx = "android.arch.persistence.room:rxjava2:$roomVersion"
+    roomCompiler = "android.arch.persistence.room:compiler:$roomVersion"
+
+    rxVersion = "2.1.6"
+    rxJava = "io.reactivex.rxjava2:rxjava:$rxVersion"
+    rxKotlin = "io.reactivex.rxjava2:rxkotlin:2.3.0"
+
+    daggerVersion = "2.13"
+    dagger = "com.google.dagger:dagger:$daggerVersion"
+    daggerCompiler = "com.google.dagger:dagger-compiler:$daggerVersion"
+
+    retrofitVersion = "2.3.0"
+    retrofit = "com.squareup.retrofit2:retrofit:$retrofitVersion"
+    retrofitGsonConverter = "com.squareup.retrofit2:converter-gson:$retrofitVersion"
+    retrofitRxJava2Adapter = "com.squareup.retrofit2:adapter-rxjava2:$retrofitVersion"
+
+    moxyVersion = "1.5.3"
+    moxy = "com.arello-mobile:moxy:$moxyVersion"
+    moxyCompiler = "com.arello-mobile:moxy-compiler:$moxyVersion"
+    moxyCompat = "com.arello-mobile:moxy-app-compat:$moxyVersion"
+
+}

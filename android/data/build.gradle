@@ -33,6 +33,8 @@ dependencies {
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
 
+    implementation rxKotlin
+
     implementation retrofit
 
     implementation room

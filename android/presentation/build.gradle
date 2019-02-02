@@ -53,6 +53,11 @@ dependencies {
     // Room
     implementation room
 
+    // Moxy
+    implementation moxy
+    kapt moxyCompiler
+    implementation moxyCompat
+
     implementation project(':data')
     implementation project(':domain')
 }

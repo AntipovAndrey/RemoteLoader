@@ -1,4 +1,4 @@
-package ru.andrey.remote.model
+package ru.andrey.remote.entity
 
 import org.springframework.data.annotation.Id
 

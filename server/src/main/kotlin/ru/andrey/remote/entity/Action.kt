@@ -1,4 +1,4 @@
-package ru.andrey.remote.model
+package ru.andrey.remote.entity
 
 enum class Action {
     QUERY_LIST,

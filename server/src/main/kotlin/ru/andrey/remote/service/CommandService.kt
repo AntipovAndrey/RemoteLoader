@@ -21,10 +21,10 @@ class CommandService(
 
     private val log = LoggerFactory.getLogger(CommandService::class.java)
 
-    fun saveCommand(requestList: List<CommandRequest>) {
+    fun saveCommand(deviceId: String, requestList: List<CommandRequest>) {
+        deviceService.assertDevicePresent(deviceId)
         val verifiedCommands = requestList.map { request ->
-            val command = request.toModel()
-            deviceService.assertDevicePresent(command.deviceId)
+            val command = request.toModel(deviceId)
             if (command.action == Action.UNKNOWN) {
                 log.info("unknown command action {} ", request.action)
                 throw UnknownActionException(request.action)

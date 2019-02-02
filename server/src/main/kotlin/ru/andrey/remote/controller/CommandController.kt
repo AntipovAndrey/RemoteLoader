@@ -12,9 +12,12 @@ class CommandController(
         private val commandService: CommandService
 ) {
 
-    @PostMapping("save")
+    @PostMapping("save/{deviceId}")
     @ResponseStatus(HttpStatus.CREATED)
-    fun saveCommand(@Valid @RequestBody request: List<CommandRequest>) = commandService.saveCommand(request)
+    fun saveCommand(
+            @Valid @RequestBody request: List<CommandRequest>,
+            @PathVariable deviceId: String
+    ) = commandService.saveCommand(deviceId, request)
 
     @PostMapping("fail")
     fun failCommand(

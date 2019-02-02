@@ -36,5 +36,15 @@ class MainFragment : MvpAppCompatFragment(), MainView {
         }
     }
 
-    override fun showCommands(commads: List<Command>) = mainAdapter.submitList(commads)
+    override fun showCommands(commands: List<Command>) {
+        mainAdapter.submitList(commands)
+        recycler.visibility = View.VISIBLE
+        errorTextView.visibility = View.INVISIBLE
+    }
+
+    override fun showError(error: Throwable) {
+        errorTextView.text = "${error.javaClass.simpleName} \n ${error.message}"
+        recycler.visibility = View.INVISIBLE
+        errorTextView.visibility = View.VISIBLE
+    }
 }

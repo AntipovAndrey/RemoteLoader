@@ -3,6 +3,7 @@ package ru.andrey.remoteloader.di.remote
 import android.content.Context
 import dagger.Module
 import dagger.Provides
+import io.reactivex.schedulers.Schedulers
 import retrofit2.Retrofit
 import ru.andrey.data.api.RemoteLoaderApi
 import ru.andrey.data.repository.RemoteCommandRepositoryImpl
@@ -17,7 +18,7 @@ class RemoteLoaderModule {
     @Feature
     @Provides
     fun provideRemoteCommandInteractor(repository: RemoteCommandRepository): RemoteCommandInteractor {
-        return RemoteCommandInteractorImpl(repository)
+        return RemoteCommandInteractorImpl(Schedulers.io(), repository)
     }
 
     @Feature

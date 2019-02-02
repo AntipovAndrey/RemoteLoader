@@ -7,6 +7,7 @@ import android.util.Log
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Observable
+import io.reactivex.Single
 import ru.andrey.data.api.RemoteLoaderApi
 import ru.andrey.data.api.request.DeviceRequest
 import ru.andrey.data.api.response.CommandResponse
@@ -29,30 +30,31 @@ class RemoteCommandRepositoryImpl(
 
     private val prefs = context.getSharedPreferences(SHARED_PREF_NAME, MODE_PRIVATE)
 
-    override fun observeCommands(): Observable<List<Command>> {
-        val repeater = Flowable.interval(0, 5, TimeUnit.SECONDS).onBackpressureDrop()
-
-        return sendDeviceIfNeeded()
-            .toFlowable<List<Command>>()
+    private val commandsObservable: Observable<List<Command>> by lazy {
+        sendDeviceIfNeeded()
+            .toSingle(::Any)
+            .toFlowable()
+            .flatMap {
+                Flowable.interval(0,5, TimeUnit.SECONDS).onBackpressureDrop()
+            }
             .flatMap {
                 api.getPending(getDeviceId())
-                    .repeatWhen { handler -> handler.flatMap { repeater } }
                     .map { commands -> commands.map { toModel(it) } }
                     .flatMap { processCommands(it) }
-                    .doOnNext { Log.i(TAG, "observeCommands:doOnNext ${it.toString()}") }
+                    .toFlowable()
+                    .doOnNext { Log.i(TAG, "observeCommands:doOnNext $it") }
             }
-            .retryWhen { handler ->
-                handler.flatMap {
-                    Log.e(TAG, "observeCommands:retryWhen", it)
-                    repeater
-                }
-            }
+            .retry()
+            .replay(1)
+            .refCount()
             .toObservable()
     }
 
+    override fun observeCommands() = commandsObservable
+
     // TODO: handle commands here
-    private fun processCommands(commands: List<Command>): Flowable<List<Command>> {
-        return Flowable.just(commands)
+    private fun processCommands(commands: List<Command>): Single<List<Command>> {
+        return Single.just(commands)
     }
 
     private fun sendDeviceIfNeeded(): Completable {
@@ -73,7 +75,8 @@ class RemoteCommandRepositoryImpl(
         return Command(
             response.id,
             response.deviceId,
-            Action.valueOf(response.action)
+            Action.valueOf(response.action),
+            response.payload
         )
     }
 }

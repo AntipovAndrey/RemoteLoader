@@ -1,5 +1,6 @@
 package ru.andrey.remote.service
 
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import ru.andrey.remote.controller.request.DeviceRequest
 import ru.andrey.remote.repository.DeviceRepository
@@ -10,6 +11,8 @@ import ru.andrey.remote.service.mapping.toModel
 class DeviceService(
         private val deviceRepository: DeviceRepository
 ) {
+
+    private val log = LoggerFactory.getLogger(DeviceService::class.java)
 
     /**
      * Saves device in the database if absent
@@ -22,7 +25,8 @@ class DeviceService(
         if (deviceRepository.existsByDeviceId(device.deviceId)) {
             return false
         }
-        deviceRepository.save(device)
+        val saved = deviceRepository.save(device)
+        log.info("new device has been saved {}", saved)
         return true
     }
 

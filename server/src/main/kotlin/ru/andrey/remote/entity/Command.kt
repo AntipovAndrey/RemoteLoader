@@ -1,11 +1,16 @@
 package ru.andrey.remote.entity
 
 import org.springframework.data.annotation.Id
+import org.springframework.data.mongodb.core.mapping.Document
+import java.time.Instant
 
-data class Command(val device: Device,
+@Document
+data class Command(val deviceId: String,
                    val action: Action,
-                   val payload: List<String> = emptyList(),
-                   val completed: Boolean = false) {
+                   val payload: String? = null,
+                   var completed: Boolean = false,
+                   var failed: Boolean = false,
+                   val time: Instant = Instant.now()) {
     @field:Id
     var id: String? = null
 }

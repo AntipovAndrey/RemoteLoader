@@ -14,6 +14,6 @@ interface RemoteLoaderApi {
     @POST("/devices/save")
     fun saveDevice(@Body device: DeviceRequest): Completable
 
-    @GET("/devices/pending/{deviceId}")
+    @GET("/commands/pending/{deviceId}")
     fun getPending(@Path("deviceId") deviceId: String): Single<List<CommandResponse>>
 }

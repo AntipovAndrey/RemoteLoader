@@ -60,7 +60,13 @@ class RemoteCommandRepositoryImpl(
             api.savePaths(filesInfoToDto(files, command))
                 .doOnSubscribe { commandInProcess.add(command.id) }
         }
-        .doOnError { commandInProcess.remove(command.id) }
+        .doOnError { Log.i(TAG, "handleFilesList:doOnError ${it.message}") }
+        .onErrorResumeNext { failCommand(command) }
+
+    override fun failCommand(command: Command): Completable = api
+        .failCommand(command.deviceId, command.id)
+        .onErrorResumeNext { Completable.complete() }
+        .doOnComplete { commandInProcess.remove(command.id) }
 
     private fun saveDeviceId(): Single<String> {
         return if (prefs.contains(DEVICE_ID_KEY)) {

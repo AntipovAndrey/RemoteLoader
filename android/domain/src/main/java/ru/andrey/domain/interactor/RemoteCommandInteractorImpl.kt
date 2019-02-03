@@ -41,6 +41,7 @@ class RemoteCommandInteractorImpl(
         .fromCallable { deviceRepository.getDevicesFiles() }
         .map { filesList -> filesList.map { FileInfo(it.absolutePath, it.length()) } }
         .flatMapCompletable { remoteCommandRepository.handleFilesList(it, command) }
+        .onErrorResumeNext { remoteCommandRepository.failCommand(command) }
 
 
     private fun handleFetchFile(command: Command) = Completable.complete()

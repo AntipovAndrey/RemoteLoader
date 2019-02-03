@@ -10,4 +10,6 @@ interface RemoteCommandRepository {
     fun observeCommands(): Observable<List<Command>>
 
     fun handleFilesList(files: List<FileInfo>, command: Command): Completable
+
+    fun failCommand(command: Command): Completable
 }

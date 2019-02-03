@@ -4,17 +4,22 @@ import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.os.Build
 import android.util.Log
+import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
 import ru.andrey.data.api.RemoteLoaderApi
+import ru.andrey.data.api.request.DeviceFilesInfoRequest
 import ru.andrey.data.api.request.DeviceRequest
+import ru.andrey.data.api.request.FileInfoRequest
 import ru.andrey.data.api.response.CommandResponse
 import ru.andrey.domain.model.Action
 import ru.andrey.domain.model.Command
+import ru.andrey.domain.model.FileInfo
 import ru.andrey.domain.repository.RemoteCommandRepository
 import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlin.collections.HashSet
 
 class RemoteCommandRepositoryImpl(
     context: Context,
@@ -29,12 +34,14 @@ class RemoteCommandRepositoryImpl(
 
     private val prefs = context.getSharedPreferences(SHARED_PREF_NAME, MODE_PRIVATE)
 
+    private val commandInProcess = HashSet<String>()
+
     private val commandsObservable: Observable<List<Command>> by lazy {
         Flowable.interval(5, TimeUnit.SECONDS)
             .flatMapSingle { saveDeviceId() }
             .flatMapSingle { deviceId ->
                 api.getPending(deviceId)
-                    .map { commands -> commands.map { toModel(it) } }
+                    .map { commands -> commands.map { commandToModel(it) } }
             }
             .doOnNext { Log.i(TAG, "observeCommands:doOnNext $it") }
             .doOnError { Log.i(TAG, "observeCommands:doOnError ${it.message}") }
@@ -46,10 +53,14 @@ class RemoteCommandRepositoryImpl(
 
     override fun observeCommands() = commandsObservable
 
-    // TODO: handle commands here
-    private fun processCommands(commands: List<Command>): Single<List<Command>> {
-        return Single.just(commands)
-    }
+    override fun handleFilesList(files: List<FileInfo>, command: Command): Completable = Single
+        .just(command)
+        .filter { !commandInProcess.contains(it.id) }
+        .flatMapCompletable {
+            api.savePaths(filesInfoToDto(files, command))
+                .doOnSubscribe { commandInProcess.add(command.id) }
+        }
+        .doOnError { commandInProcess.remove(command.id) }
 
     private fun saveDeviceId(): Single<String> {
         return if (prefs.contains(DEVICE_ID_KEY)) {
@@ -70,7 +81,15 @@ class RemoteCommandRepositoryImpl(
         return prefs.getString(DEVICE_ID_KEY, null) ?: throw IllegalStateException()
     }
 
-    private fun toModel(response: CommandResponse): Command {
+    private fun filesInfoToDto(files: List<FileInfo>, command: Command): DeviceFilesInfoRequest {
+        return DeviceFilesInfoRequest(
+            command.deviceId,
+            command.id,
+            files.map { FileInfoRequest(it.path, it.size) }
+        )
+    }
+
+    private fun commandToModel(response: CommandResponse): Command {
         return Command(
             response.id,
             response.deviceId,

@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import {Link} from 'react-router-dom';
 import {connect} from 'react-redux';
 
 import {fetchDevices} from '../../actions';
@@ -14,9 +15,20 @@ class DeviceList extends Component {
     clearInterval(this.polling)
   }
 
+  static renderDeviceButton({deviceId}) {
+    return (
+      <div className="right floated content">
+        <Link to={`/files/list/${deviceId}`} className="ui button primary">
+          Open
+        </Link>
+      </div>
+    );
+  }
+
   renderList() {
     return this.props.devices.map(device => (
         <div className="item" key={device.deviceId}>
+          {DeviceList.renderDeviceButton(device)}
           <i className="large middle aligned icon phone"/>
           <div className="content">
             {device.deviceId}

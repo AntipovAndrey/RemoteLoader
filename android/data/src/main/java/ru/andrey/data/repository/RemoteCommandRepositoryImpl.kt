@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.os.Build
 import android.util.Log
-import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -31,19 +30,16 @@ class RemoteCommandRepositoryImpl(
     private val prefs = context.getSharedPreferences(SHARED_PREF_NAME, MODE_PRIVATE)
 
     private val commandsObservable: Observable<List<Command>> by lazy {
-        sendDeviceIfNeeded()
-            .toSingle(::Any)
-            .toFlowable()
-            .flatMap {
-                Flowable.interval(0,5, TimeUnit.SECONDS).onBackpressureDrop()
-            }
-            .flatMap {
-                api.getPending(getDeviceId())
+        Flowable.interval(5, TimeUnit.SECONDS).onBackpressureDrop()
+            .flatMapSingle { saveDeviceId() }
+            .flatMap { deviceId ->
+                api.getPending(deviceId)
                     .map { commands -> commands.map { toModel(it) } }
                     .flatMap { processCommands(it) }
                     .toFlowable()
                     .doOnNext { Log.i(TAG, "observeCommands:doOnNext $it") }
             }
+            .doOnError { Log.i(TAG, "Error: ${it.message}") }
             .retry()
             .replay(1)
             .refCount()
@@ -57,13 +53,18 @@ class RemoteCommandRepositoryImpl(
         return Single.just(commands)
     }
 
-    private fun sendDeviceIfNeeded(): Completable {
+    private fun saveDeviceId(): Single<String> {
         return if (prefs.contains(DEVICE_ID_KEY)) {
-            Completable.complete()
+            Single.just(getDeviceId())
         } else {
-            val uuid = UUID.randomUUID().toString()
-            api.saveDevice(DeviceRequest(uuid, Build.MODEL))
-                .doOnComplete { prefs.edit().putString(DEVICE_ID_KEY, uuid).apply() }
+            Single.fromCallable { UUID.randomUUID() }
+                .map { it.toString() }
+                .map { DeviceRequest(it, Build.MODEL) }
+                .flatMap { device ->
+                    api.saveDevice(device).toSingle { device }
+                }
+                .map { it.deviceId }
+                .doOnSuccess { id -> prefs.edit().putString(DEVICE_ID_KEY, id).apply() }
         }
     }
 

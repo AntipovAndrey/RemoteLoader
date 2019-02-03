@@ -30,16 +30,14 @@ class RemoteCommandRepositoryImpl(
     private val prefs = context.getSharedPreferences(SHARED_PREF_NAME, MODE_PRIVATE)
 
     private val commandsObservable: Observable<List<Command>> by lazy {
-        Flowable.interval(5, TimeUnit.SECONDS).onBackpressureDrop()
+        Flowable.interval(5, TimeUnit.SECONDS)
             .flatMapSingle { saveDeviceId() }
-            .flatMap { deviceId ->
+            .flatMapSingle { deviceId ->
                 api.getPending(deviceId)
                     .map { commands -> commands.map { toModel(it) } }
-                    .flatMap { processCommands(it) }
-                    .toFlowable()
-                    .doOnNext { Log.i(TAG, "observeCommands:doOnNext $it") }
             }
-            .doOnError { Log.i(TAG, "Error: ${it.message}") }
+            .doOnNext { Log.i(TAG, "observeCommands:doOnNext $it") }
+            .doOnError { Log.i(TAG, "observeCommands:doOnError ${it.message}") }
             .retry()
             .replay(1)
             .refCount()

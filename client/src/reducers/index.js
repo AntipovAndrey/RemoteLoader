@@ -1,5 +1,7 @@
 import {combineReducers} from 'redux';
 
+import remoteReducer from './remoteReducer';
+
 export default combineReducers({
-  replaceme: () => 42,
+  remote: remoteReducer
 });

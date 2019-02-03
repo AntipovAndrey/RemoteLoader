@@ -9,7 +9,7 @@ const INITIAL_STATE = {
 function filesReducer(state = INITIAL_STATE.files, action) {
   switch (action.type) {
     case FETCH_FILE_PATHS:
-      return {...state, [action.payload.deviceId]: {data: action.payload}};
+      return {...state, [action.payload.deviceId]: action.payload};
     default:
       return state
   }
@@ -29,9 +29,9 @@ export default (state = INITIAL_STATE, action) => {
     case FETCH_DEVICES:
       return {...state, devices: action.payload};
     case FETCH_FILE_PATHS:
-      return {...state, files: filesReducer(state, action)};
+      return {...state, files: filesReducer(state.files, action)};
     case REQUEST_FILE_PATHS:
-      return {...state, sentCommands: sentCommandsReducer(state, action)};
+      return {...state, sentCommands: sentCommandsReducer(state.sentCommands, action)};
     default:
       return state
   }

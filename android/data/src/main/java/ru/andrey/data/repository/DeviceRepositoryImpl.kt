@@ -1,5 +1,6 @@
 package ru.andrey.data.repository
 
+import android.os.Environment
 import ru.andrey.domain.repository.DeviceRepository
 import java.io.File
 import java.util.*
@@ -9,7 +10,7 @@ import kotlin.collections.ArrayList
 class DeviceRepositoryImpl : DeviceRepository {
 
     override fun getDevicesFiles(): List<File> {
-        return getDevicesFiles(File("/"))
+        return getDevicesFiles(Environment.getExternalStorageDirectory())
     }
 
     private fun getDevicesFiles(parentDir: File): List<File> {

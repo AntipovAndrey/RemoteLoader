@@ -44,5 +44,4 @@ class RemoteCommandInteractorImpl(
 
 
     private fun handleFetchFile(command: Command) = Completable.complete()
-
 }

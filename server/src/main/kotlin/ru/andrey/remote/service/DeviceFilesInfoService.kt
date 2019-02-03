@@ -8,6 +8,7 @@ import ru.andrey.remote.entity.Action
 import ru.andrey.remote.repository.DeviceFilesInfoRepository
 import ru.andrey.remote.service.mapping.toDto
 import ru.andrey.remote.service.mapping.toModel
+import java.time.Instant
 
 @Service
 class DeviceFilesInfoService(
@@ -34,10 +35,18 @@ class DeviceFilesInfoService(
         log.info("device files info saved for {}", filesInfo.deviceId)
     }
 
-    fun fetchResentFilesInfo(deviceId: String): List<DeviceFilesInfoResponse> {
+    fun fetchResentFilesInfo(deviceId: String): DeviceFilesInfoResponse {
         deviceService.assertDevicePresent(deviceId)
         return deviceFilesInfoRepository
                 .findByDeviceIdAndExpired(deviceId, false)
                 .map { it.toDto() }
+                .lastOrNull() ?: emptyDeviceFilesInfo(deviceId)
     }
+
+    private fun emptyDeviceFilesInfo(deviceId: String) = DeviceFilesInfoResponse(
+            deviceId = deviceId,
+            commandId = null,
+            filesInfo = emptyList(),
+            time = Instant.now()
+    )
 }

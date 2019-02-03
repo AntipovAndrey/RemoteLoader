@@ -12,7 +12,7 @@ class DeviceFilesInfoController(
 ) {
 
     @PostMapping("save")
-    fun saveFilesInfo(@Valid @RequestBody request: DeviceFilesInfoRequest)= deviceFilesInfoService.saveDeviceFilesInfo(request)
+    fun saveFilesInfo(@Valid @RequestBody request: DeviceFilesInfoRequest) = deviceFilesInfoService.saveDeviceFilesInfo(request)
 
     @GetMapping("recent/{deviceId}")
     fun getMostRecentInfo(@PathVariable deviceId: String) = deviceFilesInfoService.fetchResentFilesInfo(deviceId)

@@ -12,4 +12,4 @@ data class DeviceFilesInfoResponse(
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-data class FileInfoResponse(val path: String, val size: Int?)
+data class FileInfoResponse(val path: String, val size: Long?)

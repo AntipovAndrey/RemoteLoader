@@ -14,4 +14,4 @@ data class DeviceFilesInfoRequest(
         val filesInfo: List<FileInfoRequest>
 )
 
-data class FileInfoRequest(val path: String, val size: Int?)
+data class FileInfoRequest(val path: String, val size: Long?)

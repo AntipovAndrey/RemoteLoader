@@ -1,3 +1,3 @@
 package ru.andrey.remote.entity
 
-data class FileInfo(val path: String, val size: Int?)
+data class FileInfo(val path: String, val size: Long?)

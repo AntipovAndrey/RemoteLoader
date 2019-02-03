@@ -8,6 +8,7 @@ import ru.andrey.remote.entity.Action
 import ru.andrey.remote.entity.Command
 import ru.andrey.remote.repository.CommandRepository
 import ru.andrey.remote.service.exception.CommandCompletedException
+import ru.andrey.remote.service.exception.CommandException
 import ru.andrey.remote.service.exception.NoSuchCommandException
 import ru.andrey.remote.service.exception.UnknownActionException
 import ru.andrey.remote.service.mapping.toDto
@@ -53,15 +54,19 @@ class CommandService(
     fun failCommand(deviceId: String, commandId: String) {
         deviceService.assertDevicePresent(deviceId)
         val command = findCommandOrThrow(commandId)
-        assertCommandNotCompleted(command, commandId)
+        assertCommandNotCompleted(command)
         command.failed = true
         val saved = commandRepository.save(command)
         log.info("command failed {}", saved)
     }
 
-
-    fun assertCommandNotCompleted(commandId: String) {
-        assertCommandNotCompleted(findCommandOrThrow(commandId), commandId)
+    fun assertCommandOfAction(commandId: String, action: Action) {
+        val command = findCommandOrThrow(commandId)
+        assertCommandNotCompleted(command)
+        if (command.action !== action) {
+            throw CommandException("Can't complete command with wrong action. " +
+                    "Expected ${command.action} got $action")
+        }
     }
 
     fun completeCommand(deviceId: String, commandId: String) {
@@ -79,10 +84,10 @@ class CommandService(
         }
     }
 
-    private fun assertCommandNotCompleted(command: Command, commandId: String) {
+    private fun assertCommandNotCompleted(command: Command) {
         if (command.completed) {
-            log.info("command already completed {}", commandId)
-            throw CommandCompletedException(commandId)
+            log.info("command already completed {}", command.id)
+            throw CommandCompletedException(command.id.toString())
         }
     }
 

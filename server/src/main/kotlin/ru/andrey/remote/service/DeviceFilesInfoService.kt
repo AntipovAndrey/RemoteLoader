@@ -4,6 +4,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import ru.andrey.remote.controller.request.DeviceFilesInfoRequest
 import ru.andrey.remote.controller.response.DeviceFilesInfoResponse
+import ru.andrey.remote.entity.Action
 import ru.andrey.remote.repository.DeviceFilesInfoRepository
 import ru.andrey.remote.service.mapping.toDto
 import ru.andrey.remote.service.mapping.toModel
@@ -20,7 +21,7 @@ class DeviceFilesInfoService(
     fun saveDeviceFilesInfo(request: DeviceFilesInfoRequest) {
         val filesInfo = request.toModel()
         deviceService.assertDevicePresent(filesInfo.deviceId)
-        commandService.assertCommandNotCompleted(filesInfo.commandId)
+        commandService.assertCommandOfAction(filesInfo.commandId, Action.QUERY_LIST)
 
         deviceFilesInfoRepository
                 .findByDeviceIdAndExpired(filesInfo.deviceId, expired = false)

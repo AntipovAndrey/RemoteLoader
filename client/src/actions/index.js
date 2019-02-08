@@ -17,6 +17,6 @@ export const requestFilePaths = deviceId => async dispatch => {
   dispatch({type: REQUEST_FILE_PATHS, payload: {...queryListAction, deviceId}});
 };
 
-export const updateFileTree = newTree => {
-  return {type: UPDATE_FILES_TREE, payload: newTree}
+export const updateFileTree = (deviceId, newTree) => {
+  return {type: UPDATE_FILES_TREE, payload: {newTree, deviceId}}
 };

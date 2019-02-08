@@ -5,7 +5,6 @@ import {connect} from 'react-redux';
 
 import {fetchFilePaths, requestFilePaths, updateFileTree} from '../../actions';
 
-
 class FilesList extends Component {
 
   componentDidMount() {
@@ -31,7 +30,7 @@ class FilesList extends Component {
         <SortableTree
           treeData={this.props.fileTree}
           canDrag={false}
-          onChange={fileTree => this.props.updateFileTree(fileTree)}
+          onChange={fileTree => this.props.updateFileTree(this.props.deviceId, fileTree)}
           theme={FileExplorerTheme}
         />
       </div>
@@ -63,7 +62,14 @@ class FilesList extends Component {
 
 const mapStateToProps = ({remote, fileTree}, {match: {params}}) => {
   const deviceId = params.deviceId;
-  const filesTree = fileTree.length === 0 ? mapFilesToTree(remote.files[deviceId]) : fileTree;
+
+  let filesTree;
+  if (!(fileTree[deviceId]) || fileTree[deviceId].length === 0) {
+    filesTree = mapFilesToTree(remote.files[deviceId])
+  } else {
+    filesTree = fileTree[deviceId]
+  }
+
   return {
     deviceId,
     fileTree: filesTree,

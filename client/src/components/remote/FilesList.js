@@ -1,9 +1,9 @@
 import React, {Component} from 'react';
-import SortableTree from 'react-sortable-tree';
-import FileExplorerTheme from 'react-sortable-tree-theme-file-explorer';
 import {connect} from 'react-redux';
 
 import {fetchFilePaths, requestFilePaths, updateFileTree} from '../../actions';
+import FilesListContainer from '../../containers/FilesListContainer';
+import {filesToTree} from '../../utils';
 
 class FilesList extends Component {
 
@@ -15,26 +15,22 @@ class FilesList extends Component {
     return <h2>loading</h2>;
   }
 
+  updateFiles = newTree => this.props.updateFileTree(this.props.deviceId, newTree);
+
   renderNoContent() {
     return (
       <div>
         <h2>No files for this device found</h2>
-        <button onClick={this.onFilesRequested} className="ui button primary">Request files list</button>
+        <button onClick={this.onFilesRequested} className="ui button primary">
+          Request files list
+        </button>
       </div>
     );
   }
 
   renderFilesList() {
-    return (
-      <div style={{height: '90vh'}}>
-        <SortableTree
-          treeData={this.props.fileTree}
-          canDrag={false}
-          onChange={fileTree => this.props.updateFileTree(this.props.deviceId, fileTree)}
-          theme={FileExplorerTheme}
-        />
-      </div>
-    );
+    return <FilesListContainer fileTree={this.props.fileTree}
+                               onTreeUpdated={this.updateFiles}/>;
   }
 
   renderListRequested() {
@@ -65,7 +61,7 @@ const mapStateToProps = ({remote, fileTree}, {match: {params}}) => {
 
   let filesTree;
   if (!(fileTree[deviceId]) || fileTree[deviceId].length === 0) {
-    filesTree = mapFilesToTree(remote.files[deviceId])
+    filesTree = filesToTree(remote.files[deviceId])
   } else {
     filesTree = fileTree[deviceId]
   }
@@ -84,30 +80,3 @@ const mapStateToProps = ({remote, fileTree}, {match: {params}}) => {
 export default connect(mapStateToProps,
   {fetchFilePaths, requestFilePaths, updateFileTree}
 )(FilesList);
-
-const mapFilesToTree = files => {
-  if (!files || !files.filesInfo) return;
-  const tree = {};
-  files.filesInfo
-    .map(file => file.path.substr(1))
-    .forEach(path => {
-      let currentNode = tree;
-      path.split('/').forEach(segment => {
-        if (currentNode[segment] === undefined) {
-          currentNode[segment] = {};
-        }
-        currentNode = currentNode[segment];
-      });
-    });
-
-  return function toTreeData(tree) {
-    return Object.keys(tree).map(title => {
-      const dataNode = {title: title};
-      if (Object.keys(tree[title]).length > 0) {
-        dataNode.children = toTreeData(tree[title]);
-      }
-
-      return dataNode;
-    });
-  }(tree);
-};

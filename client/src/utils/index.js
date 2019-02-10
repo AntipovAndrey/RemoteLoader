@@ -13,13 +13,14 @@ export const filesToTree = files => {
       });
     });
 
-  return function toTreeData(tree) {
+  return function toTreeData(tree, rootTitle) {
     return Object.keys(tree).map(title => {
       const dataNode = {title: title};
+      dataNode.path = `${rootTitle}/${title}`;
       if (Object.keys(tree[title]).length > 0) {
-        dataNode.children = toTreeData(tree[title]);
+        dataNode.children = toTreeData(tree[title], dataNode.path);
       }
       return dataNode;
     });
-  }(tree);
+  }(tree, '');
 };

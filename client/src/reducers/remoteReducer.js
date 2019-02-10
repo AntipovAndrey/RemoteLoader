@@ -1,4 +1,4 @@
-import {FETCH_DEVICES, REQUEST_FILE_PATHS, FETCH_FILE_PATHS} from '../actions/types';
+import {FETCH_DEVICES, REQUEST_FILE_PATHS, REQUEST_FILE, FETCH_FILE_PATHS} from '../actions/types';
 
 const INITIAL_STATE = {
   devices: [],
@@ -31,6 +31,7 @@ export default (state = INITIAL_STATE, action) => {
     case FETCH_FILE_PATHS:
       return {...state, files: filesReducer(state.files, action)};
     case REQUEST_FILE_PATHS:
+    case REQUEST_FILE:
       return {...state, sentCommands: sentCommandsReducer(state.sentCommands, action)};
     default:
       return state

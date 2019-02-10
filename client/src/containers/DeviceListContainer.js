@@ -7,7 +7,7 @@ const DeviceListContainer = ({devices, onSelect}) => {
     <div>
       <h2>Devices</h2>
       <div className="ui celled list">
-        {devices.map(device => <DeviceListItem device={device} onClick={onSelect}/>)}
+        {devices.map(device => <DeviceListItem key={device.deviceId} device={device} onClick={onSelect}/>)}
       </div>
     </div>
   );

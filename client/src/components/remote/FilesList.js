@@ -1,14 +1,14 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 
-import {fetchFilePaths, requestFilePaths, updateFileTree} from '../../actions';
+import {fetchFilePaths, requestFilePaths, updateFileTree, requestFile} from '../../actions';
 import FilesListContainer from '../../containers/FilesListContainer';
 import {filesToTree} from '../../utils';
 
 class FilesList extends Component {
 
   componentDidMount() {
-    this.props.fetchFilePaths(this.props.deviceId)
+    this.props.fetchFilePaths(this.props.deviceId);
   }
 
   renderLoading() {
@@ -30,6 +30,7 @@ class FilesList extends Component {
 
   renderFilesList() {
     return <FilesListContainer fileTree={this.props.fileTree}
+                               onClick={this.onFileClicked}
                                onTreeUpdated={this.updateFiles}/>;
   }
 
@@ -38,7 +39,11 @@ class FilesList extends Component {
   }
 
   onFilesRequested = () => {
-    this.props.requestFilePaths(this.props.deviceId)
+    this.props.requestFilePaths(this.props.deviceId);
+  };
+
+  onFileClicked = path => {
+    this.props.requestFile(this.props.deviceId, [path]);
   };
 
   render() {
@@ -47,12 +52,12 @@ class FilesList extends Component {
     }
     const emptyList = this.props.fileTree.length === 0;
     if (emptyList && this.props.listRequested) {
-      return this.renderListRequested()
+      return this.renderListRequested();
     }
     if (emptyList) {
-      return this.renderNoContent()
+      return this.renderNoContent();
     }
-    return this.renderFilesList()
+    return this.renderFilesList();
   }
 }
 
@@ -61,9 +66,9 @@ const mapStateToProps = ({remote, fileTree}, {match: {params}}) => {
 
   let filesTree;
   if (!(fileTree[deviceId]) || fileTree[deviceId].length === 0) {
-    filesTree = filesToTree(remote.files[deviceId])
+    filesTree = filesToTree(remote.files[deviceId] || []);
   } else {
-    filesTree = fileTree[deviceId]
+    filesTree = fileTree[deviceId];
   }
 
   return {
@@ -74,9 +79,9 @@ const mapStateToProps = ({remote, fileTree}, {match: {params}}) => {
       .filter(item => item.deviceId === deviceId)
       .filter(item => item.action === 'QUERY_LIST')
       .length !== 0
-  }
+  };
 };
 
 export default connect(mapStateToProps,
-  {fetchFilePaths, requestFilePaths, updateFileTree}
+  {fetchFilePaths, requestFilePaths, updateFileTree, requestFile}
 )(FilesList);

@@ -14,3 +14,5 @@ data class DeviceFilesInfo(val deviceId: String,
     @field:Id
     var id: String? = null
 }
+
+data class FileInfo(val path: String, val size: Long?)

@@ -1,5 +1,7 @@
 package ru.andrey.remote.service
 
+import org.springframework.core.io.Resource
+import org.springframework.core.io.UrlResource
 import org.springframework.stereotype.Service
 import org.springframework.util.StringUtils
 import org.springframework.web.multipart.MultipartFile
@@ -25,14 +27,24 @@ class FileService(
     fun saveFile(file: MultipartFile, deviceId: String, commandId: String) {
         deviceService.assertDevicePresent(deviceId)
         commandService.assertCommandOfAction(commandId, Action.FETCH_FILE)
-        saveFile(file)
+        saveFile(file, deviceId)
     }
 
-    private fun saveFile(file: MultipartFile) : String {
+    fun loadFile(location: String, deviceId: String): Resource {
+        val path = fileStorageLocation.resolve(location).resolve(deviceId).normalize()
+        return UrlResource(path.toUri())
+    }
+
+    private fun saveFile(file: MultipartFile, deviceId: String): String {
         val fileName = StringUtils.cleanPath(file.originalFilename!!)
-        val targetLocation = fileStorageLocation.resolve(fileName)
+        val targetLocation = fileStorageLocation.resolve(fileName).resolve(deviceId)
+
+        if (Files.notExists(targetLocation)) {
+            Files.createDirectory(targetLocation)
+        }
+
         Files.copy(file.inputStream, targetLocation, StandardCopyOption.REPLACE_EXISTING)
+
         return fileName
     }
-
 }

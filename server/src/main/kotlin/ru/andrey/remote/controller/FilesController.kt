@@ -1,6 +1,8 @@
 package ru.andrey.remote.controller
 
 import org.springframework.core.io.Resource
+import org.springframework.http.HttpHeaders
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import ru.andrey.remote.controller.response.UploadedFiles
@@ -18,7 +20,7 @@ class FilesController(
             @RequestParam("command") commandId: String,
             @RequestParam("files") files: List<MultipartFile>
     ) {
-
+        files.forEach { file -> service.saveFile(file, deviceId, commandId) }
     }
 
     @GetMapping("all/{deviceId}")
@@ -26,8 +28,11 @@ class FilesController(
         return emptyList()
     }
 
-    @GetMapping("load/{fileId}")
-    fun loadFile(@PathVariable fileId: String): Resource {
-        throw NotImplementedError()
+    @GetMapping("load/{deviceId}/{location}")
+    fun loadFile(@PathVariable deviceId: String, @PathVariable location: String): ResponseEntity<Resource> {
+        val resource = service.loadFile(deviceId, location)
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"${resource.filename}\"")
+                .body(resource)
     }
 }

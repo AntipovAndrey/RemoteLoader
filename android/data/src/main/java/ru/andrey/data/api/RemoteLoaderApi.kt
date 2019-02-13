@@ -11,7 +11,7 @@ import ru.andrey.data.api.response.CommandResponse
 interface RemoteLoaderApi {
 
     companion object {
-        const val UPLOADING_FILE_KEY: String = "files"
+        const val UPLOADING_FILE_KEY: String = "file"
     }
 
     @POST("/devices/save")
@@ -34,6 +34,7 @@ interface RemoteLoaderApi {
     fun uploadFile(
         @Query("device") deviceId: String,
         @Query("command") commandId: String,
-        @Part files: List<MultipartBody.Part>
+        @Header("path") path: String,
+        @Part files: MultipartBody.Part
     ): Completable
 }

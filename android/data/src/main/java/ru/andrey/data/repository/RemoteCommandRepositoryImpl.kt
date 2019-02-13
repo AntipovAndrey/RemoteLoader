@@ -65,9 +65,8 @@ class RemoteCommandRepositoryImpl(
     override fun handleFile(file: File, command: Command): Completable =
         handleCommand(command) {
             val requestBody = RequestBody.create(null, file)
-            val part =
-                MultipartBody.Part.createFormData(RemoteLoaderApi.UPLOADING_FILE_KEY, file.name, requestBody);
-            api.uploadFile(getDeviceId(), command.id, listOf(part))
+            val part = MultipartBody.Part.createFormData(RemoteLoaderApi.UPLOADING_FILE_KEY, file.name, requestBody)
+            api.uploadFile(getDeviceId(), command.id, file.absolutePath, part)
         }
 
     override fun failCommand(command: Command): Completable = api

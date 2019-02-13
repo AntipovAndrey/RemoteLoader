@@ -4,14 +4,13 @@ import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 
 @Document
-data class UploadedFiles(
+data class UploadedFile(
         val deviceId: String,
         val commandId: String,
-        val files: List<File>
+        val path: String,
+        val file: String
 ) {
 
     @field:Id
     var id: String? = null
 }
-
-data class File(val location: String)

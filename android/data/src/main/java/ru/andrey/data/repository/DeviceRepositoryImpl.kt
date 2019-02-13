@@ -13,6 +13,8 @@ class DeviceRepositoryImpl : DeviceRepository {
         return getDevicesFiles(Environment.getExternalStorageDirectory())
     }
 
+    override fun getFile(path: String) = File(path)
+
     private fun getDevicesFiles(parentDir: File): List<File> {
         val filesResult = ArrayList<File>()
         val filesAndDirectoriesQueue = LinkedList<File>()

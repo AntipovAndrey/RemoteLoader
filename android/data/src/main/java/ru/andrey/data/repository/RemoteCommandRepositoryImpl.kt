@@ -8,6 +8,8 @@ import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import ru.andrey.data.api.RemoteLoaderApi
 import ru.andrey.data.api.request.DeviceFilesInfoRequest
 import ru.andrey.data.api.request.DeviceRequest
@@ -17,9 +19,11 @@ import ru.andrey.domain.model.Action
 import ru.andrey.domain.model.Command
 import ru.andrey.domain.model.FileInfo
 import ru.andrey.domain.repository.RemoteCommandRepository
+import java.io.File
 import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.collections.HashSet
+
 
 class RemoteCommandRepositoryImpl(
     context: Context,
@@ -53,15 +57,18 @@ class RemoteCommandRepositoryImpl(
 
     override fun observeCommands() = commandsObservable
 
-    override fun handleFilesList(files: List<FileInfo>, command: Command): Completable = Single
-        .just(command)
-        .filter { !commandInProcess.contains(it.id) }
-        .flatMapCompletable {
+    override fun handleFilesList(files: List<FileInfo>, command: Command): Completable =
+        handleCommand(command) {
             api.savePaths(filesInfoToDto(files, command))
-                .doOnSubscribe { commandInProcess.add(command.id) }
         }
-        .doOnError { Log.i(TAG, "handleFilesList:doOnError ${it.message}") }
-        .onErrorResumeNext { failCommand(command) }
+
+    override fun handleFile(file: File, command: Command): Completable =
+        handleCommand(command) {
+            val requestBody = RequestBody.create(null, file)
+            val part =
+                MultipartBody.Part.createFormData(RemoteLoaderApi.UPLOADING_FILE_KEY, file.name, requestBody);
+            api.uploadFile(getDeviceId(), command.id, listOf(part))
+        }
 
     override fun failCommand(command: Command): Completable = api
         .failCommand(command.deviceId, command.id)
@@ -82,6 +89,15 @@ class RemoteCommandRepositoryImpl(
                 .doOnSuccess { id -> prefs.edit().putString(DEVICE_ID_KEY, id).apply() }
         }
     }
+
+    private fun handleCommand(command: Command, handler: () -> Completable): Completable = Single
+        .just(command)
+        .filter { !commandInProcess.contains(it.id) }
+        .flatMapCompletable {
+            handler().doOnSubscribe { commandInProcess.add(command.id) }
+        }
+        .doOnError { Log.i(TAG, "handleCommand:doOnError ${it.message}") }
+        .onErrorResumeNext { failCommand(command) }
 
     private fun getDeviceId(): String {
         return prefs.getString(DEVICE_ID_KEY, null) ?: throw IllegalStateException()

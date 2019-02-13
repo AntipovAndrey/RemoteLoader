@@ -1,6 +1,5 @@
 package ru.andrey.domain.interactor
 
-import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Scheduler
 import io.reactivex.Single
@@ -44,5 +43,8 @@ class RemoteCommandInteractorImpl(
         .onErrorResumeNext { remoteCommandRepository.failCommand(command) }
 
 
-    private fun handleFetchFile(command: Command) = Completable.complete()
+    private fun handleFetchFile(command: Command) = Single
+        .fromCallable { deviceRepository.getFile(command.payload!!) }
+        .flatMapCompletable { remoteCommandRepository.handleFile(it, command) }
+        .onErrorResumeNext { remoteCommandRepository.failCommand(command) }
 }

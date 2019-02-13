@@ -2,12 +2,17 @@ package ru.andrey.data.api
 
 import io.reactivex.Completable
 import io.reactivex.Single
+import okhttp3.MultipartBody
 import retrofit2.http.*
 import ru.andrey.data.api.request.DeviceFilesInfoRequest
 import ru.andrey.data.api.request.DeviceRequest
 import ru.andrey.data.api.response.CommandResponse
 
 interface RemoteLoaderApi {
+
+    companion object {
+        const val UPLOADING_FILE_KEY: String = "files"
+    }
 
     @POST("/devices/save")
     fun saveDevice(@Body device: DeviceRequest): Completable
@@ -22,5 +27,13 @@ interface RemoteLoaderApi {
     fun failCommand(
         @Query("device") deviceId: String,
         @Query("command") commandId: String
+    ): Completable
+
+    @Multipart
+    @POST("/files/upload")
+    fun uploadFile(
+        @Query("device") deviceId: String,
+        @Query("command") commandId: String,
+        @Part files: List<MultipartBody.Part>
     ): Completable
 }

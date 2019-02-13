@@ -5,4 +5,6 @@ import java.io.File
 interface DeviceRepository {
 
     fun getDevicesFiles(): List<File>
+
+    fun getFile(path: String): File
 }

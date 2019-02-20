@@ -6,6 +6,8 @@ import org.springframework.core.io.UrlResource
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import ru.andrey.remote.config.RemoteLoaderConfig
+import ru.andrey.remote.controller.response.UploadedFileInfo
+import ru.andrey.remote.controller.response.UploadedFilesResponse
 import ru.andrey.remote.entity.Action
 import ru.andrey.remote.entity.UploadedFile
 import ru.andrey.remote.repository.UploadedFileRepository
@@ -13,8 +15,6 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
-
-typealias UploadedResponse = ru.andrey.remote.controller.response.UploadedFile
 
 @Service
 class FileService(
@@ -62,8 +62,9 @@ class FileService(
         return file.originalFilename.toString()
     }
 
-    fun getStored(deviceId: String): List<UploadedResponse> {
-        return fileRepository.findByDeviceId(deviceId)
-                .map { UploadedResponse(it.deviceId, it.commandId, it.path, it.file) }
+    fun getStored(deviceId: String): UploadedFilesResponse {
+        return UploadedFilesResponse(deviceId,
+                fileRepository.findByDeviceId(deviceId)
+                        .map { UploadedFileInfo(it.commandId, it.path) })
     }
 }

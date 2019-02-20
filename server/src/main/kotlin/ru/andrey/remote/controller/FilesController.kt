@@ -5,7 +5,7 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
-import ru.andrey.remote.controller.response.UploadedFile
+import ru.andrey.remote.controller.response.UploadedFilesResponse
 import ru.andrey.remote.service.FileService
 
 @RestController
@@ -25,7 +25,7 @@ class FilesController(
     }
 
     @GetMapping("all/{deviceId}")
-    fun getStoredFilesForDevice(@PathVariable deviceId: String): List<UploadedFile> {
+    fun getStoredFilesForDevice(@PathVariable deviceId: String): UploadedFilesResponse {
         return service.getStored(deviceId)
     }
 

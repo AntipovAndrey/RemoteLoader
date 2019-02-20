@@ -29,8 +29,8 @@ class FilesController(
         return service.getStored(deviceId)
     }
 
-    @GetMapping("load/{deviceId}/{location}")
-    fun loadFile(@PathVariable deviceId: String, @PathVariable location: String): ResponseEntity<Resource> {
+    @GetMapping("load/{deviceId}")
+    fun loadFile(@PathVariable deviceId: String, @RequestHeader("path") location: String): ResponseEntity<Resource> {
         val resource = service.loadFile(deviceId, location)
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"${resource.filename}\"")

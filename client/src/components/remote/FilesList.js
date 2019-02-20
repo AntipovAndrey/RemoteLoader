@@ -1,13 +1,14 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 
-import {fetchFilePaths, requestFilePaths, updateFileTree, requestFile} from '../../actions';
+import {fetchFilePaths, fetchUploadedFilePaths, requestFile, requestFilePaths, updateFileTree} from '../../actions';
 import FilesListContainer from '../../containers/FilesListContainer';
 import {filesToTree} from '../../utils';
 
 class FilesList extends Component {
 
   componentDidMount() {
+    this.props.fetchUploadedFilePaths(this.props.deviceId);
     this.props.fetchFilePaths(this.props.deviceId);
   }
 
@@ -28,6 +29,10 @@ class FilesList extends Component {
     );
   }
 
+  onFilesRequested = () => {
+    this.props.requestFilePaths(this.props.deviceId);
+  };
+
   renderFilesList() {
     return <FilesListContainer fileTree={this.props.fileTree}
                                onClick={this.onFileClicked}
@@ -38,12 +43,13 @@ class FilesList extends Component {
     return <div>Files list requested</div>;
   }
 
-  onFilesRequested = () => {
-    this.props.requestFilePaths(this.props.deviceId);
-  };
-
   onFileClicked = path => {
-    this.props.requestFile(this.props.deviceId, [path]);
+    const availableFile = this.props.availableFiles.find(file => file.path === path);
+    if (availableFile) {
+      // todo: load here
+    } else {
+      this.props.requestFile(this.props.deviceId, [path]);
+    }
   };
 
   render() {
@@ -71,9 +77,12 @@ const mapStateToProps = ({remote, fileTree}, {match: {params}}) => {
     filesTree = fileTree[deviceId];
   }
 
+  const availableForDevice = (remote.availableFiles[deviceId] || {}).filesInfo || [];
+
   return {
     deviceId,
     fileTree: filesTree,
+    availableFiles: availableForDevice,
     listRequested: remote
       .sentCommands
       .filter(item => item.deviceId === deviceId)
@@ -83,5 +92,5 @@ const mapStateToProps = ({remote, fileTree}, {match: {params}}) => {
 };
 
 export default connect(mapStateToProps,
-  {fetchFilePaths, requestFilePaths, updateFileTree, requestFile}
+  {fetchFilePaths, requestFilePaths, updateFileTree, requestFile, fetchUploadedFilePaths}
 )(FilesList);

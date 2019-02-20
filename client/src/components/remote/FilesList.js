@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 
 import {fetchFilePaths, fetchUploadedFilePaths, requestFile, requestFilePaths, updateFileTree} from '../../actions';
 import FilesListContainer from '../../containers/FilesListContainer';
-import {filesToTree} from '../../utils';
+import {filesToTree, downloadFile} from '../../utils';
 
 class FilesList extends Component {
 
@@ -46,7 +46,7 @@ class FilesList extends Component {
   onFileClicked = path => {
     const availableFile = this.props.availableFiles.find(file => file.path === path);
     if (availableFile) {
-      // todo: load here
+      downloadFile(`files/load/${this.props.deviceId}`, path.split('/').slice(-1)[0], {headers: {path}})
     } else {
       this.props.requestFile(this.props.deviceId, [path]);
     }

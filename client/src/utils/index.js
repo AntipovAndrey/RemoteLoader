@@ -1,3 +1,5 @@
+import remote from '../api/remote';
+
 export const filesToTree = files => {
   if (!files || !files.filesInfo) return;
   const tree = {};
@@ -23,4 +25,14 @@ export const filesToTree = files => {
       return dataNode;
     });
   }(tree, '');
+};
+
+export const downloadFile = async (uri, name, params) => {
+  const response = await remote.get(uri, {...params, responseType: 'blob'});
+  const url = window.URL.createObjectURL(new Blob([response.data]));
+  const link = document.createElement('a');
+  link.href = url;
+  link.setAttribute('download', name);
+  link.click();
+  window.URL.revokeObjectURL(url);
 };

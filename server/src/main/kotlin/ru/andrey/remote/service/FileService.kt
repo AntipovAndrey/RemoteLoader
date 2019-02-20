@@ -4,7 +4,6 @@ import org.slf4j.LoggerFactory
 import org.springframework.core.io.Resource
 import org.springframework.core.io.UrlResource
 import org.springframework.stereotype.Service
-import org.springframework.util.StringUtils
 import org.springframework.web.multipart.MultipartFile
 import ru.andrey.remote.config.RemoteLoaderConfig
 import ru.andrey.remote.entity.Action
@@ -46,18 +45,21 @@ class FileService(
         }
     }
 
-    fun loadFile(location: String, deviceId: String): Resource {
-        val path = fileStorageLocation.resolve(deviceId).resolve(location).normalize()
+    fun loadFile(deviceId: String, location: String): Resource {
+        val relativeLocation = location
+                .takeIf { it[0] == '/' }
+                ?.replaceFirst("/", "")
+                ?: location
+        val path = fileStorageLocation.resolve(deviceId).resolve(relativeLocation).normalize()
         return UrlResource(path.toUri())
     }
 
     private fun writeFile(file: MultipartFile, path: String, deviceId: String): String {
-        val fileName = StringUtils.cleanPath(file.originalFilename!!)
-        val targetDirectory = fileStorageLocation.resolve(deviceId)
-        targetDirectory.takeIf { Files.notExists(it) }?.let { Files.createDirectory(it) }
-        val targetLocation = targetDirectory.resolve(fileName)
-        Files.copy(file.inputStream, targetLocation, StandardCopyOption.REPLACE_EXISTING)
-        return fileName
+        val filePath = fileStorageLocation.resolve(deviceId).resolve(path)
+        val targetDirectory = filePath.parent
+        targetDirectory.takeIf { Files.notExists(it) }?.let { Files.createDirectories(it) }
+        Files.copy(file.inputStream, filePath, StandardCopyOption.REPLACE_EXISTING)
+        return file.originalFilename.toString()
     }
 
     fun getStored(deviceId: String): List<UploadedResponse> {

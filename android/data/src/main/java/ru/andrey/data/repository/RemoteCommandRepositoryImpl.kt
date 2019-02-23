@@ -47,8 +47,8 @@ class RemoteCommandRepositoryImpl(
                 api.getPending(deviceId)
                     .map { commands -> commands.map { commandToModel(it) } }
             }
-            .doOnNext { Log.i(TAG, "observeCommands:doOnNext $it") }
-            .doOnError { Log.i(TAG, "observeCommands:doOnError ${it.message}") }
+            .doOnNext { Log.i(TAG, "observeProcessedCommands:doOnNext $it") }
+            .doOnError { Log.i(TAG, "observeProcessedCommands:doOnError ${it.message}") }
             .retry()
             .replay(1)
             .refCount()

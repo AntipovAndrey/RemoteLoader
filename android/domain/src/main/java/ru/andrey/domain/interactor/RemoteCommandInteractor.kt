@@ -5,5 +5,5 @@ import ru.andrey.domain.model.Command
 
 interface RemoteCommandInteractor {
 
-    fun observeCommands(): Observable<List<Command>>
+    fun observeProcessedCommands(): Observable<List<Command>>
 }

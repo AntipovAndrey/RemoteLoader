@@ -16,7 +16,7 @@ class MainPresenter @Inject constructor(
     private val disposables = CompositeDisposable()
 
     override fun onFirstViewAttach() {
-        interactor.observeCommands()
+        interactor.observeProcessedCommands()
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ viewState.showCommands(it) }, { viewState.showError(it) })
             .also { disposables.add(it) }

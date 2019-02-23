@@ -15,7 +15,7 @@ class RemoteCommandInteractorImpl(
     private val deviceRepository: DeviceRepository
 ) : RemoteCommandInteractor {
 
-    override fun observeCommands(): Observable<List<Command>> = remoteCommandRepository.observeCommands()
+    override fun observeProcessedCommands(): Observable<List<Command>> = remoteCommandRepository.observeCommands()
         .subscribeOn(ioScheduler)
         .flatMapSingle { processCommands(it) }
 

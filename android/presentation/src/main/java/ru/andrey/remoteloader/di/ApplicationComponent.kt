@@ -1,9 +1,9 @@
 package ru.andrey.remoteloader.di
 
-import android.app.Application
 import android.content.Context
 import dagger.BindsInstance
 import dagger.Component
+import ru.andrey.domain.repository.BackgroundWorkRepository
 import javax.inject.Singleton
 
 @Singleton
@@ -11,6 +11,8 @@ import javax.inject.Singleton
 interface ApplicationComponent {
 
     fun context(): Context
+
+    fun backgroundWorkRepository(): BackgroundWorkRepository
 
     @Component.Builder
     interface Builder {

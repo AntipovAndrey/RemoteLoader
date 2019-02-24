@@ -32,9 +32,10 @@ class RemoteLoaderModule {
     @Feature
     @Provides
     fun provideBackgroundCommandInteractor(
-        remoteCommandInteractor: RemoteCommandInteractor
+        remoteCommandInteractor: RemoteCommandInteractor,
+        backgroundWorkRepository: BackgroundWorkRepository
     ): BackgroundCommandInteractor {
-        return BackgroundCommandInteractorImpl(remoteCommandInteractor, Any() as BackgroundWorkRepository)//just to compile
+        return BackgroundCommandInteractorImpl(remoteCommandInteractor, backgroundWorkRepository)
     }
 
     @Feature

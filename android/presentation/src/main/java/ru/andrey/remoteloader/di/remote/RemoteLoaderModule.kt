@@ -8,8 +8,11 @@ import retrofit2.Retrofit
 import ru.andrey.data.api.RemoteLoaderApi
 import ru.andrey.data.repository.DeviceRepositoryImpl
 import ru.andrey.data.repository.RemoteCommandRepositoryImpl
+import ru.andrey.domain.interactor.BackgroundCommandInteractor
+import ru.andrey.domain.interactor.BackgroundCommandInteractorImpl
 import ru.andrey.domain.interactor.RemoteCommandInteractor
 import ru.andrey.domain.interactor.RemoteCommandInteractorImpl
+import ru.andrey.domain.repository.BackgroundWorkRepository
 import ru.andrey.domain.repository.DeviceRepository
 import ru.andrey.domain.repository.RemoteCommandRepository
 import ru.andrey.remoteloader.di.scope.Feature
@@ -24,6 +27,14 @@ class RemoteLoaderModule {
         deviceRepository: DeviceRepository
     ): RemoteCommandInteractor {
         return RemoteCommandInteractorImpl(Schedulers.io(), remoteCommandRepository, deviceRepository)
+    }
+
+    @Feature
+    @Provides
+    fun provideBackgroundCommandInteractor(
+        remoteCommandInteractor: RemoteCommandInteractor
+    ): BackgroundCommandInteractor {
+        return BackgroundCommandInteractorImpl(remoteCommandInteractor, Any() as BackgroundWorkRepository)//just to compile
     }
 
     @Feature

@@ -4,10 +4,11 @@ import android.os.Environment
 import ru.andrey.domain.repository.DeviceRepository
 import java.io.File
 import java.util.*
+import javax.inject.Inject
 import kotlin.collections.ArrayList
 
 
-class DeviceRepositoryImpl : DeviceRepository {
+class DeviceRepositoryImpl @Inject constructor() : DeviceRepository {
 
     override fun getDevicesFiles(): List<File> {
         return getDevicesFiles(Environment.getExternalStorageDirectory())

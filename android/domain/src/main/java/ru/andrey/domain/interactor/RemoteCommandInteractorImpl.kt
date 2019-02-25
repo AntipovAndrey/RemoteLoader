@@ -3,14 +3,17 @@ package ru.andrey.domain.interactor
 import io.reactivex.Observable
 import io.reactivex.Scheduler
 import io.reactivex.Single
+import ru.andrey.common.IO_SCHEDULER
 import ru.andrey.domain.model.Action
 import ru.andrey.domain.model.Command
 import ru.andrey.domain.model.FileInfo
 import ru.andrey.domain.repository.DeviceRepository
 import ru.andrey.domain.repository.RemoteCommandRepository
+import javax.inject.Inject
+import javax.inject.Named
 
-class RemoteCommandInteractorImpl(
-    private val ioScheduler: Scheduler,
+class RemoteCommandInteractorImpl @Inject constructor(
+    @Named(IO_SCHEDULER) private val ioScheduler: Scheduler,
     private val remoteCommandRepository: RemoteCommandRepository,
     private val deviceRepository: DeviceRepository
 ) : RemoteCommandInteractor {

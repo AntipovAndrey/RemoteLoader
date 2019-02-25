@@ -37,9 +37,12 @@ dependencies {
 
     implementation retrofit
 
+    implementation jsrInject
+
     implementation room
     kapt roomCompiler
 
     implementation project(':domain')
+    implementation project(':common')
 }
 

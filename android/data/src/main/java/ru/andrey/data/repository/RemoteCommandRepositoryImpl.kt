@@ -22,10 +22,11 @@ import ru.andrey.domain.repository.RemoteCommandRepository
 import java.io.File
 import java.util.*
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 import kotlin.collections.HashSet
 
 
-class RemoteCommandRepositoryImpl(
+class RemoteCommandRepositoryImpl @Inject constructor(
     context: Context,
     private val api: RemoteLoaderApi
 ) : RemoteCommandRepository {

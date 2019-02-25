@@ -1,52 +1,41 @@
 package ru.andrey.remoteloader.di.remote
 
-import android.content.Context
+import dagger.Binds
 import dagger.Module
-import dagger.Provides
-import io.reactivex.schedulers.Schedulers
-import retrofit2.Retrofit
-import ru.andrey.data.api.RemoteLoaderApi
 import ru.andrey.data.repository.DeviceRepositoryImpl
 import ru.andrey.data.repository.RemoteCommandRepositoryImpl
 import ru.andrey.domain.interactor.BackgroundCommandInteractor
 import ru.andrey.domain.interactor.BackgroundCommandInteractorImpl
 import ru.andrey.domain.interactor.RemoteCommandInteractor
 import ru.andrey.domain.interactor.RemoteCommandInteractorImpl
-import ru.andrey.domain.repository.BackgroundWorkRepository
 import ru.andrey.domain.repository.DeviceRepository
 import ru.andrey.domain.repository.RemoteCommandRepository
 import ru.andrey.remoteloader.di.scope.Feature
 
 @Module
-class RemoteLoaderModule {
+abstract class RemoteLoaderModule {
 
     @Feature
-    @Provides
-    fun provideRemoteCommandInteractor(
-        remoteCommandRepository: RemoteCommandRepository,
-        deviceRepository: DeviceRepository
-    ): RemoteCommandInteractor {
-        return RemoteCommandInteractorImpl(Schedulers.io(), remoteCommandRepository, deviceRepository)
-    }
+    @Binds
+    abstract fun provideRemoteCommandInteractor(
+        impl: RemoteCommandInteractorImpl
+    ): RemoteCommandInteractor
 
     @Feature
-    @Provides
-    fun provideBackgroundCommandInteractor(
-        remoteCommandInteractor: RemoteCommandInteractor,
-        backgroundWorkRepository: BackgroundWorkRepository
-    ): BackgroundCommandInteractor {
-        return BackgroundCommandInteractorImpl(remoteCommandInteractor, backgroundWorkRepository)
-    }
+    @Binds
+    abstract fun provideBackgroundCommandInteractor(
+        impl: BackgroundCommandInteractorImpl
+    ): BackgroundCommandInteractor
 
     @Feature
-    @Provides
-    fun provideDeviceRepository(): DeviceRepository {
-        return DeviceRepositoryImpl()
-    }
+    @Binds
+    abstract fun provideDeviceRepository(
+        impl: DeviceRepositoryImpl
+    ): DeviceRepository
 
     @Feature
-    @Provides
-    fun provideRemoteCommandRepository(context: Context, retrofit: Retrofit): RemoteCommandRepository {
-        return RemoteCommandRepositoryImpl(context, retrofit.create(RemoteLoaderApi::class.java))
-    }
+    @Binds
+    abstract fun provideRemoteCommandRepository(
+        impl: RemoteCommandRepositoryImpl
+    ): RemoteCommandRepository
 }

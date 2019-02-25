@@ -19,6 +19,7 @@ ext {
     daggerVersion = "2.13"
     dagger = "com.google.dagger:dagger:$daggerVersion"
     daggerCompiler = "com.google.dagger:dagger-compiler:$daggerVersion"
+    jsrInject = "javax.inject:javax.inject:1"
 
     retrofitVersion = "2.3.0"
     retrofit = "com.squareup.retrofit2:retrofit:$retrofitVersion"

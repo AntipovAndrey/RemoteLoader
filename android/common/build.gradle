@@ -5,9 +5,4 @@ sourceCompatibility = 1.8
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
-
-    implementation rxJava
-    implementation jsrInject
-
-    implementation project(':common')
 }

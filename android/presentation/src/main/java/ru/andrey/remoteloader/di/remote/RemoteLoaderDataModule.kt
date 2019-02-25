@@ -6,12 +6,17 @@ import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
+import ru.andrey.data.api.RemoteLoaderApi
 import ru.andrey.remoteloader.di.scope.Feature
 
 @Module
 class RemoteLoaderDataModule(
     private val baseUrl: String
 ) {
+
+    @Feature
+    @Provides
+    fun provideRemoteLoaderApi(retrofit: Retrofit) = retrofit.create(RemoteLoaderApi::class.java)
 
     @Feature
     @Provides

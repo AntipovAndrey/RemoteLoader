@@ -43,13 +43,9 @@ class RemoteCommandRepositoryImpl @Inject constructor(
 
     private val commandsObservable: Observable<List<Command>> by lazy {
         Flowable.interval(5, TimeUnit.SECONDS)
-            .flatMapSingle { saveDeviceId() }
-            .flatMapSingle { deviceId ->
-                api.getPending(deviceId)
-                    .map { commands -> commands.map { commandToModel(it) } }
-            }
-            .doOnNext { Log.i(TAG, "observeProcessedCommands:doOnNext $it") }
-            .doOnError { Log.i(TAG, "observeProcessedCommands:doOnError ${it.message}") }
+            .flatMapSingle { getPendingCommands() }
+            .doOnNext { Log.i(TAG, "observeCommands:doOnNext $it") }
+            .doOnError { Log.i(TAG, "observeCommands:doOnError ${it.message}") }
             .retry()
             .replay(1)
             .refCount()
@@ -57,6 +53,16 @@ class RemoteCommandRepositoryImpl @Inject constructor(
     }
 
     override fun observeCommands() = commandsObservable
+
+    override fun getPendingCommands(): Single<List<Command>> {
+        return saveDeviceId()
+            .flatMap { deviceId ->
+                api.getPending(deviceId)
+                    .map { commands -> commands.map { commandToModel(it) } }
+            }
+            .doOnSuccess { Log.i(TAG, "getPendingCommands:doOnSuccess $it") }
+            .doOnError { Log.e(TAG, "getPendingCommands:doOnError ${it.message}") }
+    }
 
     override fun handleFilesList(files: List<FileInfo>, command: Command): Completable =
         handleCommand(command) {

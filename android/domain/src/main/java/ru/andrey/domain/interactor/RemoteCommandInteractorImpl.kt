@@ -1,5 +1,6 @@
 package ru.andrey.domain.interactor
 
+import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Scheduler
 import io.reactivex.Single
@@ -20,9 +21,12 @@ class RemoteCommandInteractorImpl @Inject constructor(
 
     override fun observeProcessedCommands(): Observable<List<Command>> = remoteCommandRepository.observeCommands()
         .subscribeOn(ioScheduler)
-        .flatMapSingle { processCommands(it) }
+        .flatMapSingle { commands ->
+            processCommands(commands).toSingle { commands }
+        }
 
-    private fun processCommands(commands: List<Command>): Single<List<Command>> {
+
+    override fun processCommands(commands: List<Command>): Completable {
         return Single.just(commands)
             .flatMapObservable { Observable.fromIterable(it) }
             .flatMapCompletable { command ->
@@ -35,8 +39,6 @@ class RemoteCommandInteractorImpl @Inject constructor(
                     }
                 }
             }
-            .toSingle { commands }
-
     }
 
     private fun handleQueryList(command: Command) = Single

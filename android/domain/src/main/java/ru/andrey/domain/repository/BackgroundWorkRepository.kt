@@ -2,5 +2,8 @@ package ru.andrey.domain.repository
 
 interface BackgroundWorkRepository {
 
-    fun doInBackground(task: () -> Unit)
+    /**
+     *  Specifies a background recurring task to be executed
+     */
+    fun repeatInBackground(task: () -> Unit)
 }

@@ -5,7 +5,7 @@ import javax.inject.Inject
 
 class WorkManagerBackgroundWorkRepository @Inject constructor() : BackgroundWorkRepository {
 
-    override fun doInBackground(task: () -> Unit) {
+    override fun repeatInBackground(task: () -> Unit) {
 
     }
 }

@@ -22,7 +22,7 @@ class MainFragment : MvpAppCompatFragment(), MainView {
     lateinit var presenter: MainPresenter
 
     @ProvidePresenter
-    internal fun providePresenter() = app.remoteLoaderComponent.presenter().mainPresenter()
+    internal fun providePresenter() = app.remoteLoaderComponent.presenterComponent().mainPresenter()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
         inflater.inflate(R.layout.fragment_main, container, false)

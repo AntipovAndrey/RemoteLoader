@@ -15,11 +15,18 @@ class MainPresenter @Inject constructor(
 
     private val disposables = CompositeDisposable()
 
-    override fun onFirstViewAttach() {
-        interactor.observeProcessedCommands()
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ viewState.showCommands(it) }, { viewState.showError(it) })
-            .also { disposables.add(it) }
+    private var observationStarted = false
+
+    fun clickStartObserving() {
+        if (observationStarted) {
+            disposables.dispose()
+            observationStarted = true
+        } else {
+            interactor.observeProcessedCommands()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ viewState.showCommands(it) }, { viewState.showError(it) })
+                .also { disposables.add(it) }
+        }
     }
 
     override fun onDestroy() {

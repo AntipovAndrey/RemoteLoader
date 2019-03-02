@@ -26,6 +26,7 @@ function filesReducer(state = INITIAL_STATE.files, action) {
 function sentCommandsReducer(state = INITIAL_STATE.sentCommands, action) {
   switch (action.type) {
     case REQUEST_FILE_PATHS:
+    case REQUEST_FILE:
       return [...state, action.payload];
     default:
       return state;

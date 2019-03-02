@@ -39,6 +39,9 @@ dependencies {
 
     implementation jsrInject
 
+    implementation workManager
+    implementation workManagerKtx
+
     implementation room
     kapt roomCompiler
 

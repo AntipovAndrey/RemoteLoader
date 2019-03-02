@@ -31,4 +31,7 @@ ext {
     moxyCompiler = "com.arello-mobile:moxy-compiler:$moxyVersion"
     moxyCompat = "com.arello-mobile:moxy-app-compat:$moxyVersion"
 
+    workVersion = "1.0.0-rc02"
+    workManagerKtx = "android.arch.work:work-runtime-ktx:$workVersion"
+    workManager = "android.arch.work:work-runtime:$workVersion"
 }

@@ -10,8 +10,10 @@ class BackgroundCommandInteractorImpl @Inject constructor(
     private val remoteCommandRepository: RemoteCommandRepository
 ) : BackgroundCommandInteractor {
 
+    private val workName = "LISTEN_COMMANDS"
+
     override fun startBackgroundObserving() {
-        backgroundWorkRepository.repeatInBackground {
+        backgroundWorkRepository.repeatInBackground(workName) {
             remoteCommandRepository.getPendingCommands()
                 .flatMapCompletable { commands ->
                     remoteCommandInteractor.processCommands(commands)

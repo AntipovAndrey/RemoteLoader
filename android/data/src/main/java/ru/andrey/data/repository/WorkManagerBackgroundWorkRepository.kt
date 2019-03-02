@@ -14,7 +14,7 @@ import javax.inject.Inject
 class WorkManagerBackgroundWorkRepository @Inject constructor() : BackgroundWorkRepository {
 
     override fun repeatInBackground(name: String, task: () -> Unit) {
-        val work = PeriodicWorkRequestBuilder<CommonWorker>(5, TimeUnit.MINUTES)
+        val work = PeriodicWorkRequestBuilder<CommonWorker>(30, TimeUnit.MINUTES)
             .setInputData(Data.Builder().putString(ID_KEY, name).build())
             .build()
 

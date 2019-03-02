@@ -2,6 +2,7 @@ package ru.andrey.remoteloader.di.remote
 
 import dagger.Component
 import dagger.Subcomponent
+import ru.andrey.domain.interactor.BackgroundCommandInteractor
 import ru.andrey.remoteloader.di.ApplicationComponent
 import ru.andrey.remoteloader.di.scope.Feature
 import ru.andrey.remoteloader.di.scope.Screen
@@ -14,7 +15,9 @@ import ru.andrey.remoteloader.ui.presenter.MainPresenter
 )
 interface RemoteLoaderComponent {
 
-    fun presenter(): PresenterComponent
+    fun presenterComponent(): PresenterComponent
+
+    fun backgroundCommands() : BackgroundCommandInteractor
 
     @Screen
     @Subcomponent

@@ -21,4 +21,11 @@ class App : Application() {
             .remoteLoaderDataModule(RemoteLoaderDataModule(BuildConfig.API_URL))
             .build()
     }
+
+    override fun onCreate() {
+        super.onCreate()
+        remoteLoaderComponent
+            .backgroundCommands()
+            .startBackgroundObserving()
+    }
 }

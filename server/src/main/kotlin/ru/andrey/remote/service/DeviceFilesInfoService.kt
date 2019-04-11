@@ -17,7 +17,7 @@ class DeviceFilesInfoService(
         private val deviceService: DeviceService
 ) {
 
-    private val log = LoggerFactory.getLogger(CommandService::class.java)
+    private val log = LoggerFactory.getLogger(DeviceFilesInfoService::class.java)
 
     fun saveDeviceFilesInfo(request: DeviceFilesInfoRequest) {
         val filesInfo = request.toModel()

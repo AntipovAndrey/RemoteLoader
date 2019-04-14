@@ -20,8 +20,9 @@ class MainPresenter @Inject constructor(
     fun clickStartObserving() {
         if (observationStarted) {
             disposables.dispose()
-            observationStarted = true
+            observationStarted = false
         } else {
+            observationStarted = true
             interactor.observeProcessedCommands()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ viewState.showCommands(it) }, { viewState.showError(it) })
